@@ -1,0 +1,16 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: linklens-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: linklens
+      POSTGRES_USER: linklens
+      POSTGRES_PASSWORD: linklens
+    ports:
+      - "5433:5432"
+    volumes:
+      - linklens_pgdata:/var/lib/postgresql/data
+
+volumes:
+  linklens_pgdata:

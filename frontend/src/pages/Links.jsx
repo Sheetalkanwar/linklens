@@ -1,0 +1,5 @@
+import { Plus, Search } from "lucide-react";
+import { useMemo, useState } from "react";
+import { Link } from "react-router-dom";
+import LinkCard from "../components/LinkCard";
+export default function Links({links, reload}) { const [q,setQ]=useState(""); const filtered=useMemo(()=>links.filter(x=>(x.title||x.short_code).toLowerCase().includes(q.toLowerCase())||x.destination_url.toLowerCase().includes(q.toLowerCase())),[links,q]); return <><header className="topbar"><div><div className="eyebrow">YOUR LINKS</div><h1>Link library</h1></div><Link className="primary" to="/links/new"><Plus size={17}/> New link</Link></header><div className="toolbar"><div className="search"><Search size={17}/><input value={q} onChange={e=>setQ(e.target.value)} placeholder="Search links…"/></div><span className="muted">{filtered.length} link{filtered.length===1?"":"s"}</span></div><div className="links-list">{filtered.length ? filtered.map(link=><LinkCard key={link.id} link={link} onChange={reload}/>) : <div className="empty panel">No links found. Create one to get started.</div>}</div></>}
