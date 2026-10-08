@@ -46,7 +46,7 @@ def set_session(response, user_id: int):
         create_token(user_id),
         httponly=True,
         secure=settings.cookie_secure,
-        samesite="lax",
+        samesite="none",
         max_age=7 * 24 * 3600,
     )
 
