@@ -8,19 +8,11 @@ import {
 import {
   NavLink,
   Outlet,
-  useNavigate,
 } from "react-router-dom";
-import { api } from "../lib/api";
 
-export default function Layout({ user }) {
-  const navigate = useNavigate();
-
+export default function Layout({ user, onLogout }) {
   async function logout() {
-    await api("/api/auth/logout", {
-      method: "POST",
-    });
-
-    navigate("/login");
+    await onLogout();
   }
 
   return (
@@ -30,6 +22,7 @@ export default function Layout({ user }) {
           <span className="brand-mark">
             <Zap size={17} fill="currentColor" />
           </span>
+
           <span>LinkLens</span>
         </div>
 
@@ -44,7 +37,10 @@ export default function Layout({ user }) {
             My Links
           </NavLink>
 
-          <NavLink to="/links/new" className="create-nav">
+          <NavLink
+            to="/links/new"
+            className="create-nav"
+          >
             <Plus size={18} />
             Create link
           </NavLink>
@@ -53,16 +49,22 @@ export default function Layout({ user }) {
         <div className="sidebar-bottom">
           <div className="mini-user">
             <div className="avatar">
-              {user.name.slice(0, 1).toUpperCase()}
+              {user?.name
+                ? user.name.slice(0, 1).toUpperCase()
+                : "U"}
             </div>
 
             <div>
-              <strong>{user.name}</strong>
-              <span>{user.email}</span>
+              <strong>{user?.name || "User"}</strong>
+              <span>{user?.email || ""}</span>
             </div>
           </div>
 
-          <button className="ghost-btn" onClick={logout}>
+          <button
+            type="button"
+            className="ghost-btn"
+            onClick={logout}
+          >
             <LogOut size={16} />
             Sign out
           </button>

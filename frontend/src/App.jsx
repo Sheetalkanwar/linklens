@@ -15,9 +15,10 @@ export default function App() {
   const [links, setLinks] = useState([]);
   const [analytics, setAnalytics] = useState(null);
 
-  // --------------------------------------------
+  // --------------------------------------------------
   // Load analytics
-  // --------------------------------------------
+  // --------------------------------------------------
+
   async function loadAnalytics() {
     try {
       const data = await api("/api/analytics");
@@ -27,9 +28,10 @@ export default function App() {
     }
   }
 
-  // --------------------------------------------
-  // Load authenticated user + app data
-  // --------------------------------------------
+  // --------------------------------------------------
+  // Load current user and application data
+  // --------------------------------------------------
+
   async function load() {
     try {
       const me = await api("/api/auth/me");
@@ -52,16 +54,18 @@ export default function App() {
     }
   }
 
-  // --------------------------------------------
+  // --------------------------------------------------
   // Initial authentication check
-  // --------------------------------------------
+  // --------------------------------------------------
+
   useEffect(() => {
     load();
   }, []);
 
-  // --------------------------------------------
+  // --------------------------------------------------
   // Refresh analytics every 5 seconds
-  // --------------------------------------------
+  // --------------------------------------------------
+
   useEffect(() => {
     if (!user) {
       return;
@@ -83,9 +87,10 @@ export default function App() {
     };
   }, [user]);
 
-  // --------------------------------------------
+  // --------------------------------------------------
   // Called after successful login/register
-  // --------------------------------------------
+  // --------------------------------------------------
+
   async function handleLogin(loggedInUser) {
     setUser(loggedInUser);
 
@@ -105,9 +110,29 @@ export default function App() {
     }
   }
 
-  // --------------------------------------------
+  // --------------------------------------------------
+  // Logout
+  // --------------------------------------------------
+
+  async function handleLogout() {
+    try {
+      await api("/api/auth/logout", {
+        method: "POST",
+      });
+    } catch (error) {
+      console.error("Logout request failed:", error);
+    } finally {
+      // Always clear frontend authentication state
+      setUser(null);
+      setLinks([]);
+      setAnalytics(null);
+    }
+  }
+
+  // --------------------------------------------------
   // Loading screen
-  // --------------------------------------------
+  // --------------------------------------------------
+
   if (user === undefined) {
     return (
       <div className="loading">
@@ -116,12 +141,16 @@ export default function App() {
     );
   }
 
-  // --------------------------------------------
-  // Routes
-  // --------------------------------------------
+  // --------------------------------------------------
+  // Application routes
+  // --------------------------------------------------
+
   return (
     <Routes>
+      {/* --------------------------------------------- */}
       {/* LOGIN */}
+      {/* --------------------------------------------- */}
+
       <Route
         path="/login"
         element={
@@ -136,7 +165,10 @@ export default function App() {
         }
       />
 
+      {/* --------------------------------------------- */}
       {/* REGISTER */}
+      {/* --------------------------------------------- */}
+
       <Route
         path="/register"
         element={
@@ -151,10 +183,20 @@ export default function App() {
         }
       />
 
+      {/* --------------------------------------------- */}
       {/* AUTHENTICATED APPLICATION */}
+      {/* --------------------------------------------- */}
+
       {user ? (
-        <Route element={<Layout user={user} />}>
-          {/* ROOT → DASHBOARD */}
+        <Route
+          element={
+            <Layout
+              user={user}
+              onLogout={handleLogout}
+            />
+          }
+        >
+          {/* Root → Dashboard */}
           <Route
             path="/"
             element={
@@ -165,7 +207,7 @@ export default function App() {
             }
           />
 
-          {/* DASHBOARD */}
+          {/* Dashboard */}
           <Route
             path="/dashboard"
             element={
@@ -175,7 +217,7 @@ export default function App() {
             }
           />
 
-          {/* LINKS */}
+          {/* Links */}
           <Route
             path="/links"
             element={
@@ -186,13 +228,13 @@ export default function App() {
             }
           />
 
-          {/* CREATE LINK */}
+          {/* Create Link */}
           <Route
             path="/links/new"
             element={<NewLink />}
           />
 
-          {/* UNKNOWN AUTHENTICATED ROUTE */}
+          {/* Unknown authenticated route */}
           <Route
             path="*"
             element={
@@ -204,7 +246,10 @@ export default function App() {
           />
         </Route>
       ) : (
+        /* ------------------------------------------- */
         /* NOT AUTHENTICATED */
+        /* ------------------------------------------- */
+
         <Route
           path="*"
           element={
